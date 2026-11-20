@@ -151,12 +151,10 @@ $printTableBorder();
 $printTableRow("Your character's name: $name!", STR_PAD_BOTH);
 $printTableBorder();
 
-$rounds = $number_rounds + 1;
-
 while ($number_rounds < 10) {
     if ($number_rounds > 0) {
         // menu with choise of actions
-        $text = "STARTING ROUND $rounds. BE CAREFULL";
+        $text = "STARTING ROUND $number_rounds. BE CAREFULL";
         $printTableBorder();
         $printTableRow($text);
         $printTableBorder();
@@ -184,4 +182,45 @@ while ($number_rounds < 10) {
             break;
         }
     }
+}
+
+while ($number_rounds < 10) {
+    $rounds = $number_rounds + 1;
+
+    $printTableBorder();
+    $printTableRow("ROUND $rounds - CHARACTER STATUS", STR_PAD_BOTH);
+    $printTableBorder();
+    $printTableRow("Hunger: " . $state["hunger"]);
+    $printTableRow("Thirst: " . $state["thirst"]);
+    $printTableBorder();
+    $printTableRow("1. Continue to menu", STR_PAD_BOTH);
+    $printTableBorder();
+    $printTableRow("2. Eat something what you have", STR_PAD_BOTH);
+    $printTableBorder();
+    $printTableRow("3. Drink some water", STR_PAD_BOTH);
+    $printTableBorder();
+
+    do {
+            $choice3 = trim(readline("Choose an option: "));
+
+            if (!in_array($choice3, ["1", "2", "3"], true)) {
+                echo "Invalid input! Please enter 1, 2, or 3\n";
+            }
+        } while (!in_array($choice3, ["1", "2", "3"], true));
+        
+        // choice finish the test
+        if ($choice3 === "1") {
+            echo "You chose to continue!\n";
+        }
+        if ($choice3 === "2") {
+            echo "You chose to eat something!\n";
+            if ($state["hunger"] > 0) {
+                $state["hunger"]--;
+            }
+        } elseif ($choice3 === "3") {
+            echo "You chose to drink some water!\n";
+            if ($state["thirst"] > 0) {
+                $state["thirst"]--;
+            }
+        }
 }
