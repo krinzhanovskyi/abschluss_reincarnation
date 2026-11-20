@@ -1,6 +1,6 @@
-# Reincarnation
+# SURVIVE 10 DAYS AND STAY ALIVE
 
-`Reincarnation` is a console-based survival game set in a post-apocalyptic world. After zombies attack the player's car, the character hides in a bunker. The player must manage limited resources and survive 10 rounds.
+`survive 10 days and stay alive` is a console-based survival game set in a post-apocalyptic world. After zombies attack the player's car, the character hides in a bunker. The player must manage limited resources and survive 10 rounds.
 
 All interactions take place through a text menu in the terminal.
 
