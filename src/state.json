@@ -1,4 +1,6 @@
 {
-  "hunger": 100,
-  "thirst": 100
+    "hunger": 100,
+    "thirst": 100,
+    "health": 100,
+    "survival_chance": 100
 }
