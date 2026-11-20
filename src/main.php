@@ -89,14 +89,6 @@ if ($choice === "2") {
     exit("Why did you even start it?\n");
 }
 
-$state["hunger"] = 100;
-$state["thirst"] = 100;
-$state["survival_chance"] = 100;
-$state["food"] = 1;
-$state["water"] = 1;
-
-saveState($stateFile, $state);
-
 echo "Let's play...\n";
 sleep(1);
 echo "You must stay alive within 10 days\n";
@@ -113,7 +105,20 @@ sleep(2);
 echo "Let's see if you can survive!\n";
 
 sleep(2);
-while ($numberRounds < 10) {
+
+do {
+    $numberRounds = 0;
+    $leftGame = false;
+
+    $state["hunger"] = 100;
+    $state["thirst"] = 100;
+    $state["survival_chance"] = 100;
+    $state["food"] = 1;
+    $state["water"] = 1;
+
+    saveState($stateFile, $state);
+
+    while ($numberRounds < 10) {
     $numberRounds++;
 
     $state["hunger"] = max(0, $state["hunger"] - 8);
@@ -179,4 +184,42 @@ while ($numberRounds < 10) {
 
     $state["survival_chance"] = (int) (($state["hunger"] + $state["thirst"]) / 2);
     saveState($stateFile, $state);
-}    
+
+            if ($state["survival_chance"] <= 0) {
+            break;
+        }
+    }
+
+    if ($leftGame) {
+        break;
+    }
+
+    $won = false;
+
+    if ($numberRounds === 10 && $state["survival_chance"] > 0) {
+        $won = random_int(1, 100) <= $state["survival_chance"];
+    }
+
+    $printTableBorder();
+    $printTableRow("GAME RESULT", STR_PAD_BOTH);
+    $printTableBorder();
+
+    if ($won) {
+        $printTableRow("VICTORY! You survived!", STR_PAD_BOTH);
+    } else {
+        $printTableRow("DEFEAT! You did not survive.", STR_PAD_BOTH);
+    }
+
+    $printTableBorder();
+    $printTableRow("Rounds played: " . $numberRounds . "/10");
+    $printTableRow(
+        "Final survival chance: " . $state["survival_chance"] . "%"
+    );
+    $printTableBorder();
+    $printTableRow("1. Exit", STR_PAD_BOTH);
+    $printTableRow("2. New game", STR_PAD_BOTH);
+    $printTableBorder();
+
+    $playAgain = askChoice("Choose an option: ", ["1", "2"]);
+
+} while ($playAgain === "2");
