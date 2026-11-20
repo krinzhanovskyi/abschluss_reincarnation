@@ -96,7 +96,7 @@ foreach (["hunger", "thirst", "survival_chance"] as $name) {
 // Start menu
 sleep(1);
 $printTableBorder();
-$printTableRow("Welcome to survive 10 stay alive", STR_PAD_BOTH);
+$printTableRow("Welcome to survive 10 days and stay alive", STR_PAD_BOTH);
 $printTableBorder();
 $printTableRow("1. Start game", STR_PAD_BOTH);
 $printTableBorder();
