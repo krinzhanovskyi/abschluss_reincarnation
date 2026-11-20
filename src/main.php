@@ -1,5 +1,6 @@
 <?php 
 
+$number_rounds = 0;
 $tableContentWidth = 45;
 $printTableBorder = function () use ($tableContentWidth): void {
     echo str_repeat("-", $tableContentWidth + 4) . "\n";
@@ -103,3 +104,44 @@ do {
     }
 } while ($name === "");
 sleep(1);
+
+$printTableBorder();
+$printTableRow("Your character's name: $name!", STR_PAD_BOTH);
+$printTableBorder();
+
+if ($number_rounds = 0) {
+    $rounds = $number_rounds + 1;
+}
+
+while ($number_rounds < 10) {
+    if ($number_rounds > 0) {
+        // menu with choise of actions
+        $text = "STARTING ROUND $rounds. BE CAREFULL";
+        $printTableBorder();
+        $printTableRow($text);
+        $printTableBorder();
+        $printTableRow("1. View my inventory", STR_PAD_BOTH);
+        $printTableBorder();
+        $printTableRow("2. View possible actions", STR_PAD_BOTH);
+        $printTableBorder();
+        $printTableRow("3. View my chance of survival", STR_PAD_BOTH);
+        $printTableBorder();
+        $printTableRow("4. Leave the game", STR_PAD_BOTH);
+        $printTableBorder();
+
+        // validation of input
+        do {
+            $choice3 = trim(readline("Choose an option: "));
+
+            if (!in_array($choice3, ["1", "2", "3", "4"], true)) {
+                echo "Invalid input! Please enter 1, 2, 3 or 4\n";
+            }
+        } while (!in_array($choice3, ["1", "2", "3", "4"], true));
+        
+        // choice finish the test
+        if ($choice3 === "4") {
+            echo "You chose to leave!\n";
+            break;
+        }
+    }
+}
