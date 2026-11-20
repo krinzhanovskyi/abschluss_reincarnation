@@ -23,6 +23,7 @@ function loadState(string $file): array
 
     $state = json_decode($json, true);
 
+    
     if (
         !is_array($state) ||
         !isset($state["hunger"], $state["thirst"], $state["health"], $state["survival_chance"]) ||
@@ -50,6 +51,19 @@ function saveState(string $file, array $state): void
     }
 }
 
+function askChoice(string $question, array $options): string
+{
+    do {
+        $choice = trim(readline($question));
+
+        if (!in_array($choice, $options, true)) {
+            echo "Invalid input! Please enter " . implode(", ", $options) . ".\n";
+        }
+    } while (!in_array($choice, $options, true));
+
+    return $choice;
+}
+
 $state = loadState($stateFile);
 
 foreach (["hunger", "thirst", "health", "survival_chance"] as $name) {
@@ -67,13 +81,7 @@ $printTableBorder();
 $printTableRow("@reincarnation", STR_PAD_BOTH);
 $printTableBorder();
 
-do {
-    $choice = trim(readline("Choose an option: "));
-
-    if ($choice !== "1" && $choice !== "2") {
-        echo "Invalid input! Please enter 1 or 2.\n";
-    }
-} while ($choice !== "1" && $choice !== "2");
+$choice = askChoice("Choose an option: ", ["1", "2"]);
 
 if ($choice === "2") {
     exit("Why did you even start it?\n");
@@ -111,13 +119,7 @@ $printTableBorder();
 $printTableRow("2. Male", STR_PAD_BOTH);
 $printTableBorder();
 
-do {
-    $genderChoice = trim(readline("Choose an option: "));
-
-    if ($genderChoice !== "1" && $genderChoice !== "2") {
-        echo "Invalid input! Please enter 1 or 2.\n";
-    }
-} while ($genderChoice !== "1" && $genderChoice !== "2");
+$genderChoice = askChoice("Choose an option: ", ["1", "2"]);
 
 $gender = $genderChoice === "1" ? "Female" : "Male";
 
@@ -171,4 +173,55 @@ while ($numberRounds < 10) {
     $printTableBorder();
     $printTableRow("5. Leave the game", STR_PAD_BOTH);
     $printTableBorder();
+
+    $choice = askChoice("Choose an option: ", ["1", "2", "3", "4", "5"]);
+
+    if ($choice === "5") {
+        saveState($stateFile, $state);
+        $leftGame = true;
+        echo "You chose to leave!\n";
+        break;
+    }
+
+    if ($choice === "1") {
+        if ($state["food"] > 0) {
+            $state["food"]--;
+            $state["hunger"] = max(0, min(100, $state["hunger"] + 25));
+            echo "You ate some food. Hunger is now " . $state["hunger"] . "%.\n";
+        } else {
+            echo "You have no food left.\n";
+        }
+    } elseif ($choice === "2") {
+        if ($state["water"] > 0) {
+            $state["water"]--;
+            $state["thirst"] = max(0, min(100, $state["thirst"] + 30));
+            echo "You drank some water. Thirst is now " . $state["thirst"] . "%.\n";
+        } else {
+            echo "You have no water left.\n";
+        }
+    } elseif ($choice === "3") {
+        $result = rand(1, 100);
+
+        if ($result <= 50) {
+            $state["food"]++;
+            echo "You found one unit of food.\n";
+        } elseif ($result <= 80) {
+            $state["water"]++;
+            echo "You found one unit of water.\n";
+        } else {
+            $state["health"] = max(0, $state["health"] - 50);
+            echo "Zombies surprised you. Health decreased.\n";
+        }
+    } elseif ($choice === "4") {
+        $state["health"] = max(0, min(100, $state["health"] + 5));
+        echo "You rested and recovered a little health.\n";
+    }
+
+    $state["survival_chance"] = (int) (($state["hunger"] + $state["thirst"] + $state["health"]) / 3);
+    saveState($stateFile, $state);
+
+    if ($state["survival_chance"] <= 0 || $state["health"] <= 0) {
+        echo "Your health or survival chance fell to 0%. You did not survive.\n";
+        break;
+    }
 }
