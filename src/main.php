@@ -2,6 +2,11 @@
 
 $stateFile = __DIR__ . "/state.json";
 
+$numberRounds = 0;
+$leftGame = false;
+
+$state = loadState($stateFile);
+
 $tableContentWidth = 45;
 $printTableBorder = function () use ($tableContentWidth): void {
     echo str_repeat("-", $tableContentWidth + 4) . "\n";
@@ -63,8 +68,6 @@ function askChoice(string $question, array $options): string
     return $choice;
 }
 
-$state = loadState($stateFile);
-
 foreach (["hunger", "thirst", "survival_chance"] as $name) {
     $state[$name] = max(0, min(100, (int) $state[$name]));
 }
@@ -97,50 +100,19 @@ saveState($stateFile, $state);
 echo "Let's play...\n";
 sleep(1);
 echo "You must stay alive within 10 days\n";
-sleep(1);
+sleep(2);
 $printTableBorder();
 echo "You were driving your car on your way to your vacation...\n";
-sleep(1);
+sleep(2);
 echo "But suddenly, zombies attacked your car...\n";
-sleep(1);
+sleep(2);
 echo "You broke away from them and hid yourself in a bunker...\n";
-sleep(1);
+sleep(2);
 echo "The outside is full of zombies, and every foray could be fatal...\n";
-sleep(1);
+sleep(2);
 echo "Let's see if you can survive!\n";
 
-$printTableBorder();
-$printTableRow("Select your character's gender", STR_PAD_BOTH);
-$printTableBorder();
-$printTableRow("1. Female", STR_PAD_BOTH);
-$printTableBorder();
-$printTableRow("2. Male", STR_PAD_BOTH);
-$printTableBorder();
-
-$genderChoice = askChoice("Choose an option: ", ["1", "2"]);
-
-$gender = $genderChoice === "1" ? "Female" : "Male";
-
-$printTableBorder();
-$printTableRow("Your character will be " . $gender, STR_PAD_BOTH);
-$printTableBorder();
-
-do {
-    $name = trim(readline("What's the name of your character? "));
-
-    if ($name === "") {
-        echo "Invalid input! Please enter your name.\n";
-    }
-} while ($name === "");
-
-sleep(1);
-$printTableBorder();
-$printTableRow("Your character's name: " . $name . "!", STR_PAD_BOTH);
-$printTableBorder();
-
-$numberRounds = 0;
-$leftGame = false;
-
+sleep(2);
 while ($numberRounds < 10) {
     $numberRounds++;
 
@@ -166,7 +138,7 @@ while ($numberRounds < 10) {
     $printTableRow("4. Leave the game", STR_PAD_BOTH);
     $printTableBorder();
 
-    $choice = askChoice("Choose an option: ", ["1", "2", "3", "4", "5"]);
+    $choice = askChoice("Choose an option: ", ["1", "2", "3", "4"]);
 
     if ($choice === "4") {
         saveState($stateFile, $state);
@@ -194,15 +166,17 @@ while ($numberRounds < 10) {
     } elseif ($choice === "3") {
         $result = rand(1, 100);
 
-        if ($result <= 50) {
+        if ($result <= 40) {
             $state["food"]++;
             echo "You found one unit of food.\n";
         } elseif ($result <= 80) {
             $state["water"]++;
             echo "You found one unit of water.\n";
+        } else {
+            echo "You found nothing.\n";
         }
     }
 
     $state["survival_chance"] = (int) (($state["hunger"] + $state["thirst"]) / 2);
     saveState($stateFile, $state);
-}
+}    
