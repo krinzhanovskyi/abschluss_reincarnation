@@ -171,11 +171,4 @@ while ($numberRounds < 10) {
     $printTableBorder();
     $printTableRow("5. Leave the game", STR_PAD_BOTH);
     $printTableBorder();
-
-    do {
-        $choice = trim(readline("Choose an option: "));
-
-        if ($choice !== "1" && $choice !== "2" && $choice !== "3" && $choice !== "4" && $choice !== "5") {
-            echo "Invalid input! Please enter 1, 2, 3, 4 or 5.\n";
-        }
-    } while ($choice !== "1" && $choice !== "2" && $choice !== "3" && $choice !== "4" && $choice !== "5");
+}
