@@ -1,5 +1,47 @@
 <?php 
 
+
+$stateFile = __DIR__ . "/state.json";
+
+function loadState(string $file): array
+{
+    if (!file_exists($file)) {
+        exit("Error: state.json was not found.\n");
+    }
+
+    $json = file_get_contents($file);
+
+    if ($json === false) {
+        exit("Error: state.json could not be read.\n");
+    }
+
+    $state = json_decode($json, true);
+
+    if (
+        !is_array($state) ||
+        !isset($state["hunger"], $state["thirst"]) ||
+        !is_numeric($state["hunger"]) ||
+        !is_numeric($state["thirst"])
+    ) {
+        exit("Error: state.json has an invalid format.\n");
+    }
+
+    return $state;
+}
+
+function saveState(string $file, array $state): void
+{
+    $json = json_encode($state);
+    file_put_contents($file, $json);
+}
+
+$state = loadState($stateFile);
+
+$state["hunger"] = max(0, $state["hunger"] - 5);
+$state["thirst"] = max(0, $state["thirst"] - 5);
+
+saveState($stateFile, $state);
+
 $number_rounds = 0;
 $tableContentWidth = 45;
 $printTableBorder = function () use ($tableContentWidth): void {
@@ -109,9 +151,7 @@ $printTableBorder();
 $printTableRow("Your character's name: $name!", STR_PAD_BOTH);
 $printTableBorder();
 
-if ($number_rounds = 0) {
-    $rounds = $number_rounds + 1;
-}
+$rounds = $number_rounds + 1;
 
 while ($number_rounds < 10) {
     if ($number_rounds > 0) {
