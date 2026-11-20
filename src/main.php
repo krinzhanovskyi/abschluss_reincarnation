@@ -34,10 +34,10 @@ function loadState(string $file): array
 
     
     if (
-        !is_array($state) ||
-        !isset($state["hunger"], $state["thirst"], $state["survival_chance"]) ||
-        !is_numeric($state["hunger"]) ||
-        !is_numeric($state["thirst"]) ||
+        !is_array($state) or
+        !isset($state["hunger"], $state["thirst"], $state["survival_chance"]) or
+        !is_numeric($state["hunger"]) or
+        !is_numeric($state["thirst"]) or
         !is_numeric($state["survival_chance"])
     ) {
         exit("Error: state.json has an invalid format.\n");
@@ -74,7 +74,7 @@ function askChoice(string $question, array $options): string
         $choice = trim($input);
 
         $valid = preg_match('/^[0-9]$/', $choice) === 1
-            && in_array($choice, $options, true);
+            and in_array($choice, $options, true);
 
         if (!$valid) {
             echo "Please enter " . implode(", ", $options) . ".\n";
@@ -218,7 +218,7 @@ do {
 // victory declaration
     $won = false;
 // сhecking the conditions for victory using odds
-    if ($numberRounds === 10 && $state["survival_chance"] > 0) {
+    if ($numberRounds === 10 and $state["survival_chance"] > 0) {
         $won = random_int(1, 100) <= $state["survival_chance"];
     }
 // end menu
