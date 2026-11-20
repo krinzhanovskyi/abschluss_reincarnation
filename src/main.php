@@ -61,15 +61,25 @@ function saveState(string $file, array $state): void
 }
 
 // validation of the answer to the question
+// accept only a single digit that matches an available menu option.
 function askChoice(string $question, array $options): string
 {
     do {
-        $choice = trim(readline($question));
+        $input = readline($question);
 
-        if (!in_array($choice, $options, true)) {
-            echo "Invalid input! Please enter " . implode(", ", $options) . ".\n";
+        if ($input === false) {
+            exit("\nInput closed. Goodbye!\n");
         }
-    } while (!in_array($choice, $options, true));
+
+        $choice = trim($input);
+
+        $valid = preg_match('/^[0-9]$/', $choice) === 1
+            && in_array($choice, $options, true);
+
+        if (!$valid) {
+            echo "Please enter " . implode(", ", $options) . ".\n";
+        }
+    } while (!$valid);
 
     return $choice;
 }
@@ -94,7 +104,7 @@ $printTableBorder();
 $choice = askChoice("Choose an option: ", ["1", "2"]);
 
 if ($choice === "2") {
-    exit("Why did you even start it?\n");
+    exit("Thanks for playing. Goodbye!\n");
 }
 
 // backgroundstory if 1 was chosen
