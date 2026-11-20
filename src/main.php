@@ -26,10 +26,9 @@ function loadState(string $file): array
     
     if (
         !is_array($state) ||
-        !isset($state["hunger"], $state["thirst"], $state["health"], $state["survival_chance"]) ||
+        !isset($state["hunger"], $state["thirst"], $state["survival_chance"]) ||
         !is_numeric($state["hunger"]) ||
         !is_numeric($state["thirst"]) ||
-        !is_numeric($state["health"]) ||
         !is_numeric($state["survival_chance"])
     ) {
         exit("Error: state.json has an invalid format.\n");
@@ -66,7 +65,7 @@ function askChoice(string $question, array $options): string
 
 $state = loadState($stateFile);
 
-foreach (["hunger", "thirst", "health", "survival_chance"] as $name) {
+foreach (["hunger", "thirst", "survival_chance"] as $name) {
     $state[$name] = max(0, min(100, (int) $state[$name]));
 }
 
@@ -89,7 +88,6 @@ if ($choice === "2") {
 
 $state["hunger"] = 100;
 $state["thirst"] = 100;
-$state["health"] = 100;
 $state["survival_chance"] = 100;
 $state["food"] = 1;
 $state["water"] = 1;
@@ -149,15 +147,11 @@ while ($numberRounds < 10) {
     $state["hunger"] = max(0, $state["hunger"] - 8);
     $state["thirst"] = max(0, $state["thirst"] - 12);
 
-    if ($state["hunger"] === 0 || $state["thirst"] === 0) {
-        $state["health"] = max(0, $state["health"] - 15);
-    }
-    $state["survival_chance"] = (int) (($state["hunger"] + $state["thirst"] + $state["health"]) / 3);
+    $state["survival_chance"] = (int) (($state["hunger"] + $state["thirst"]) / 2);
 
     $printTableBorder();
     $printTableRow("ROUND " . $numberRounds . " - CHARACTER STATUS", STR_PAD_BOTH);
     $printTableBorder();
-    $printTableRow("Health: " . $state["health"] . "%");
     $printTableRow("Hunger: " . $state["hunger"] . "%");
     $printTableRow("Thirst: " . $state["thirst"] . "%");
     $printTableRow("Survival chance: " . $state["survival_chance"] . "%");
@@ -169,14 +163,12 @@ while ($numberRounds < 10) {
     $printTableBorder();
     $printTableRow("3. Search the bunker", STR_PAD_BOTH);
     $printTableBorder();
-    $printTableRow("4. Rest", STR_PAD_BOTH);
-    $printTableBorder();
-    $printTableRow("5. Leave the game", STR_PAD_BOTH);
+    $printTableRow("4. Leave the game", STR_PAD_BOTH);
     $printTableBorder();
 
     $choice = askChoice("Choose an option: ", ["1", "2", "3", "4", "5"]);
 
-    if ($choice === "5") {
+    if ($choice === "4") {
         saveState($stateFile, $state);
         $leftGame = true;
         echo "You chose to leave!\n";
@@ -194,7 +186,7 @@ while ($numberRounds < 10) {
     } elseif ($choice === "2") {
         if ($state["water"] > 0) {
             $state["water"]--;
-            $state["thirst"] = max(0, min(100, $state["thirst"] + 30));
+            $state["thirst"] = max(0, min(100, $state["thirst"] + 25));
             echo "You drank some water. Thirst is now " . $state["thirst"] . "%.\n";
         } else {
             echo "You have no water left.\n";
@@ -208,20 +200,9 @@ while ($numberRounds < 10) {
         } elseif ($result <= 80) {
             $state["water"]++;
             echo "You found one unit of water.\n";
-        } else {
-            $state["health"] = max(0, $state["health"] - 50);
-            echo "Zombies surprised you. Health decreased.\n";
         }
-    } elseif ($choice === "4") {
-        $state["health"] = max(0, min(100, $state["health"] + 5));
-        echo "You rested and recovered a little health.\n";
     }
 
-    $state["survival_chance"] = (int) (($state["hunger"] + $state["thirst"] + $state["health"]) / 3);
+    $state["survival_chance"] = (int) (($state["hunger"] + $state["thirst"]) / 2);
     saveState($stateFile, $state);
-
-    if ($state["survival_chance"] <= 0 || $state["health"] <= 0) {
-        echo "Your health or survival chance fell to 0%. You did not survive.\n";
-        break;
-    }
 }
